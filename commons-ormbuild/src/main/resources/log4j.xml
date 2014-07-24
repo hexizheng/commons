@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<!--控制台 输出-->
+	<appender name="LOG.Console" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{HH:mm:ss,SSS}] %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="DEBUG" />
+			<param name="LevelMax" value="FATAL" />
+		</filter>
+	</appender>
+
+	<logger name="com.mypay" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="LOG.Console" />
+	</logger>
+
+	<logger name="org.apache.activemq" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="LOG.Console" />
+	</logger>
+
+	<logger name="org.springframework" additivity="false">
+		<level value="WARN" />
+		<appender-ref ref="LOG.Console" />
+	</logger>
+
+	<logger name="java.sql" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="LOG.Console" />
+	</logger>
+
+	<logger name="com.danga.MemCached" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="LOG.Console" />
+	</logger>
+
+	<root>
+		<level value="DEBUG" />
+		<appender-ref ref="LOG.Console" />
+	</root>
+
+</log4j:configuration>
+

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="${entityMetaInfoTO.eoDAONameAbstract}">
+  <resultMap id="result" class="${entityMetaInfoTO.eoFullName}">
+#foreach( $field in $tableColMetaInfoTOList )    
+    <result property="${field.fieldName}" column="${field.colName}" />
+#end
+  </resultMap>
+	
+	<insert id="insertHasId" parameterClass="${entityMetaInfoTO.eoFullName}">
+			   insert into ${entityMetaInfoTO.tableName}(${entityMetaInfoTO.pkColName},${entityMetaInfoTO.lastUpdateTimeColName},${entityMetaInfoTO.versionColName}
+#foreach( $field in $tableColMetaInfoTOList )    
+#if (${field.colName} != ${entityMetaInfoTO.pkColName})
+#if (${field.colName} != ${entityMetaInfoTO.lastUpdateTimeColName})
+#if (${field.colName} != ${entityMetaInfoTO.versionColName})
+			    <dynamic>
+                	<isNotNull prepend="," property="${field.fieldName}">
+                		${field.colName}
+                	</isNotNull>
+                </dynamic>
+#end
+#end
+#end
+#end
+                ) 
+ 			  values(
+                #${entityMetaInfoTO.pkPropertyName}:NUMERIC#,systimestamp,1
+#foreach( $field in $tableColMetaInfoTOList )
+#if (${field.colName} != ${entityMetaInfoTO.pkColName})   
+#if (${field.colName} != ${entityMetaInfoTO.lastUpdateTimeColName}) 
+#if (${field.colName} != ${entityMetaInfoTO.versionColName}) 
+                <dynamic>
+                	<isNotNull prepend="," property="${field.fieldName}">
+#if ( $field.isVercharType() )
+                		#${field.fieldName}:VARCHAR#
+#elseif ($field.isDateType())
+                        #${field.fieldName}:TIMESTAMP#
+#else
+                		#${field.fieldName}:NUMERIC#
+#end
+                	</isNotNull>
+                </dynamic>
+#end
+#end 
+#end             
+#end
+               ) 
+	</insert>
+	
+	<insert id="insert" parameterClass="${entityMetaInfoTO.eoFullName}">
+		   <selectKey resultClass="java.lang.Long" keyProperty="${entityMetaInfoTO.pkPropertyName}" >
+		       select to_char(sysdate,'yyyymmddhh24miss')||${entityMetaInfoTO.seqName}.nextval  as id  from  DUAL 
+		   </selectKey> 
+			   insert into ${entityMetaInfoTO.tableName}(${entityMetaInfoTO.pkColName},${entityMetaInfoTO.lastUpdateTimeColName},${entityMetaInfoTO.versionColName}
+#foreach( $field in $tableColMetaInfoTOList )    
+#if (${field.colName} != ${entityMetaInfoTO.pkColName})
+#if (${field.colName} != ${entityMetaInfoTO.lastUpdateTimeColName})
+#if (${field.colName} != ${entityMetaInfoTO.versionColName})
+			    <dynamic>
+                	<isNotNull prepend="," property="${field.fieldName}">
+                		${field.colName}
+                	</isNotNull>
+                </dynamic>
+#end
+#end
+#end
+#end
+                ) 
+ 			  values(
+                #${entityMetaInfoTO.pkPropertyName}:NUMERIC#,systimestamp,1
+#foreach( $field in $tableColMetaInfoTOList )
+#if (${field.colName} != ${entityMetaInfoTO.pkColName})   
+#if (${field.colName} != ${entityMetaInfoTO.lastUpdateTimeColName}) 
+#if (${field.colName} != ${entityMetaInfoTO.versionColName}) 
+                <dynamic>
+                	<isNotNull prepend="," property="${field.fieldName}">
+#if ( $field.isVercharType() )
+                		#${field.fieldName}:VARCHAR#
+#elseif ($field.isDateType())
+                        #${field.fieldName}:TIMESTAMP#
+#else
+                		#${field.fieldName}:NUMERIC#
+#end
+                	</isNotNull>
+                </dynamic>
+#end
+#end 
+#end             
+#end
+               ) 
+	</insert>
+		
+	<update id="update" parameterClass="${entityMetaInfoTO.eoFullName}">
+		   update ${entityMetaInfoTO.tableName} set ${entityMetaInfoTO.versionColName}=${entityMetaInfoTO.versionColName}+1
+#foreach( $field in $tableColMetaInfoTOList ) 
+#if (${field.colName} != ${entityMetaInfoTO.pkColName})
+#if (${field.colName} != ${entityMetaInfoTO.versionColName})
+#if ( $field.isVercharType() )
+            ,${field.colName}=#${field.fieldName}:VARCHAR#
+#elseif ($field.isDateType())         
+#if (${field.colName} == ${entityMetaInfoTO.lastUpdateTimeColName})
+            ,${field.colName}=systimestamp
+#else
+            ,${field.colName}=#${field.fieldName}:TIMESTAMP#
+#end
+#else
+            ,${field.colName}=#${field.fieldName}:NUMERIC#
+#end
+#end
+#end
+#end
+		    where ${entityMetaInfoTO.pkColName}=#${entityMetaInfoTO.pkPropertyName}:NUMERIC# and ${entityMetaInfoTO.versionColName}=#${entityMetaInfoTO.versionPropertyName}:NUMERIC#
+	</update>
+	
+	<update id="updateByField" parameterClass="${entityMetaInfoTO.eoFullName}">
+		   update ${entityMetaInfoTO.tableName} set ${entityMetaInfoTO.versionColName}=${entityMetaInfoTO.versionColName}+1 ,${entityMetaInfoTO.lastUpdateTimeColName}=systimestamp 
+#foreach( $field in $tableColMetaInfoTOList ) 
+#if (${field.colName} != ${entityMetaInfoTO.pkColName})
+#if (${field.colName} != ${entityMetaInfoTO.lastUpdateTimeColName}) 
+#if (${field.colName} != ${entityMetaInfoTO.versionColName})
+		<dynamic>
+			<isNotNull prepend="," property="${field.fieldName}">
+#if ( $field.isVercharType() )
+             	${field.colName}=#${field.fieldName}:VARCHAR#
+#elseif ($field.isDateType())         
+             	${field.colName}=#${field.fieldName}:TIMESTAMP#
+#else
+             	${field.colName}=#${field.fieldName}:NUMERIC#
+#end
+			</isNotNull>
+		</dynamic>
+#end
+#end
+#end
+#end
+		   where ${entityMetaInfoTO.pkColName}=#${entityMetaInfoTO.pkPropertyName}:NUMERIC# and ${entityMetaInfoTO.versionColName}=#${entityMetaInfoTO.versionPropertyName}:NUMERIC#
+	</update>
+  	
+  <select id="select" parameterClass="java.util.Map" resultMap="result">
+	   select * from ${entityMetaInfoTO.tableName} where ${entityMetaInfoTO.pkColName}=#id:NUMERIC#
+		<dynamic>
+			<isEqual property="isLock" compareValue="true">
+				for update			
+			</isEqual> 
+		</dynamic>
+  </select>
+  	
+  <select id="selectEOByEO" parameterClass="${entityMetaInfoTO.eoFullName}" resultMap="result">
+	   select * from ${entityMetaInfoTO.tableName} 
+		<dynamic prepend="WHERE">
+#foreach( $field in $tableColMetaInfoTOList ) 
+			<isNotNull prepend="and" property="${field.fieldName}">
+#if ( $field.isVercharType() )
+             	${field.colName}=#${field.fieldName}:VARCHAR#
+#elseif ($field.isDateType())         
+             	${field.colName}=#${field.fieldName}:TIMESTAMP#
+#else
+             	${field.colName}=#${field.fieldName}:NUMERIC#
+#end
+			</isNotNull>
+#end
+		</dynamic>
+  </select>
+  
+  <select id="countByEO" parameterClass="${entityMetaInfoTO.eoFullName}" resultClass="java.lang.Integer">
+	   select count(${entityMetaInfoTO.pkColName}) from ${entityMetaInfoTO.tableName} 
+		<dynamic prepend="WHERE">
+#foreach( $field in $tableColMetaInfoTOList ) 
+			<isNotNull prepend="and" property="${field.fieldName}">
+#if ( $field.isVercharType() )
+             	${field.colName}=#${field.fieldName}:VARCHAR#
+#elseif ($field.isDateType())         
+             	${field.colName}=#${field.fieldName}:TIMESTAMP#
+#else
+             	${field.colName}=#${field.fieldName}:NUMERIC#
+#end
+			</isNotNull>
+#end
+		</dynamic>
+  </select>
+  
+  <delete id="delete" parameterClass="${entityMetaInfoTO.eoFullName}">
+      delete from ${entityMetaInfoTO.tableName} where ${entityMetaInfoTO.pkColName}=#${entityMetaInfoTO.pkPropertyName}:NUMERIC# and ${entityMetaInfoTO.versionColName}=#${entityMetaInfoTO.versionPropertyName}:NUMERIC#
+  </delete>
+  
+  
+  		
+</sqlMap>

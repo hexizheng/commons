@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+
+
+<beans>
+
+	<bean id="dataSource_ibatisbuild" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"></property>
+		<property name="url" value="jdbc:oracle:thin:@192.168.1.220:1521:hexizheng"></property>
+		<property name="username" value="hexizheng"></property>
+		<property name="password" value="hexizheng"></property>
+		<property name="initialSize" value="2" />
+		<property name="maxActive" value="2" />
+		<property name="maxIdle" value="2" />
+		<property name="maxWait" value="1000" />
+	</bean>
+
+	<!-- 
+	<bean id="dataSource_ibatisbuild" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"></property>
+		<property name="url" value="jdbc:oracle:thin:@192.168.129.25:1521:oratest"></property>
+		<property name="username" value="mypay"></property>
+		<property name="password" value="mypay"></property>
+		<property name="initialSize" value="2" />
+		<property name="maxActive" value="2" />
+		<property name="maxIdle" value="2" />
+		<property name="maxWait" value="1000" />
+	</bean>
+	 -->
+
+	<bean id="sqlMapClient_ibatisbuild" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocation" value="classpath:/META-INF/sqlmap-ibatisbuild.xml" />
+		<property name="dataSource" ref="dataSource_ibatisbuild" />
+	</bean>
+
+	<bean id="tableMetaInfoDAOImpl_ibatisbuild" class="com.jscn.commons.ormbuild.db.TableMetaInfoDAOImpl">
+		<property name="dataSource" ref="dataSource_ibatisbuild"></property>
+		<property name="sqlMapClient" ref="sqlMapClient_ibatisbuild"></property>
+	</bean>
+
+	<bean id="ibatisBuildMainServiceImpl_ibatisbuild" class="com.jscn.commons.ormbuild.service.IbatisBuildMainServiceImpl">
+		<property name="tableMetaInfoDAO" ref="tableMetaInfoDAOImpl_ibatisbuild"></property>
+		<property name="ibatisFilesWriter" ref="ibatisFilesWriterImpl_ibatisbuild"></property>
+	</bean>
+
+	<bean id="ibatisFilesWriterImpl_ibatisbuild" class="com.jscn.commons.ormbuild.writer.IbatisFilesWriterImpl" init-method="init">
+		<property name="velocityPathTO.velocityLoaderPath" value="/templete"></property>
+		<property name="velocityPathTO.packageHtmlVmName" value="package.html"></property>
+		<property name="velocityPathTO.entityClassVmName" value="EntityEO.java"></property>
+		<property name="velocityPathTO.entitySqlVmName" value="Entity.xml"></property>
+		<property name="velocityPathTO.entityDAOVmName" value="EntityDAO.java"></property>
+		<property name="velocityPathTO.entityDAOImplVmName" value="EntityDAOImpl.java"></property>
+		<property name="velocityPathTO.entityDAOTestVmName" value="EntityDAOITest.java"></property>
+		<property name="velocityPathTO.entityClassVmNameAbstract" value="EntityEOAbstract.java"></property>
+		<property name="velocityPathTO.entitySqlVmNameAbstract" value="EntityAbstract.xml"></property>
+		<property name="velocityPathTO.entityDAOImplVmNameAbstract" value="EntityDAOImplAbstract.java"></property>
+		<property name="velocityPathTO.entityDAOTestVmNameAbstract" value="EntityDAOITestAbstract.java"></property>
+		<property name="entityName" value="entityMetaInfoTO"></property>
+		<property name="propertyListName" value="tableColMetaInfoTOList"></property>
+	</bean>
+
+</beans>

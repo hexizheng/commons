@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<!-- 使用annotation 自动注册bean,并保证@Required,@Autowired的属性被注入 -->
+	<context:component-scan base-package="com.jscn.commons.core.rabbitmq" />
+	<!-- 应用属性文件读入 -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="locations">
+			<list>
+				<value>classpath:/config/rabbitmq/config.properties</value>
+			</list>
+		</property>
+	</bean>
+	<!-- RabbitMq客户端 -->
+	<bean id="clientTemplate" class="com.jscn.commons.core.rabbitmq.ClientTemplate">
+		<property name="addressList" value="${rabbitmq.addresslist}" /><!-- 消息队列名 -->
+		<property name="queueName" value="${rabbitmq.queuename}" /><!-- 消息队列名 -->
+		<!-- <property name="serverName" value="${rabbitmq.servername}" /> --><!-- 消息队列主机名 -->
+		<!-- <property name="routingKeys" value="${rabbitmq.routingkeys}" />消息队列路由关键字，多个关键字用逗号分隔 -->
+		<property name="charSet" value="${rabbitmq.charset}" /><!-- 字符集 -->
+		<property name="quePersistence" value="${rabbitmq.quepersistence}" /><!-- 消息队列是否持久化，默认：false-->
+		<property name="msgPersistence" value="${rabbitmq.msgpersistence}" /><!-- 消息是否持久化，默认：false -->
+	</bean>
+
+	<!-- RabbitMq服务端 -->
+	<bean id="serverTemplate" class="com.jscn.commons.core.rabbitmq.ServerTemplate">
+	    <property name="addressList" value="${rabbitmq.addresslist}" /><!-- 消息队列名 -->
+		<property name="queueName" value="${rabbitmq.queuename}" /><!-- 消息队列名 -->
+		<!-- <property name="serverName" value="${rabbitmq.servername}" /> --><!-- 消息队列主机名 -->
+		<!-- <property name="routingKeys" value="${rabbitmq.routingkeys}" />消息队列路由关键字，多个关键字用逗号分隔 -->
+		<property name="charSet" value="${rabbitmq.charset}" /><!-- 字符集 -->
+		<property name="quePersistence" value="${rabbitmq.quepersistence}" /><!-- 消息队列是否持久化，默认：false -->
+		<property name="msgPersistence" value="${rabbitmq.msgpersistence}" /><!-- 消息是否持久化，默认：false -->
+		<property name="basicQos" value="${rabbitmq.basicqos}" /><!-- 消息接收次数，默认：1 -->
+		<property name="autoAsk" value="${rabbitmq.autoask}" /><!-- 是否自动应答，默认：false -->
+		<!-- 线程池大小配置 -->
+		<property name="threadPoolSize" value="${rabbitmq.threadpoolsize}" /><!-- 线程池最大线程数，默认：0,不使用线程池 -->
+	</bean>
+</beans>

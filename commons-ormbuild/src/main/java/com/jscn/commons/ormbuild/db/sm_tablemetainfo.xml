@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="TableMetaInfoDAO">
+  <resultMap id="tableMetaInfoEO" class="com.jscn.commons.ormbuild.db.TableMetaInfoEO">
+    <result property="tableName" column="TABLE_NAME" />
+    <result property="tableComment" column="COMMENTS" />
+  </resultMap>
+  	
+  <resultMap id="tableColMetaInfoEO" class="com.jscn.commons.ormbuild.db.TableColMetaInfoEO">
+    <result property="columnName" column="COLUMN_NAME" />
+    <result property="columnComment" column="COMMENTS" />
+    <result property="columnType" column="DATA_TYPE" />
+    <result property="columnPrecision" column="DATA_PRECISION" />
+    <result property="columnScale" column="DATA_SCALE" />
+    <result property="columnCharLength" column="CHAR_LENGTH" />
+  </resultMap>
+  	
+  <select id="findTableMetaInfoByTableNamePattern" parameterClass="java.util.Map" resultMap="tableMetaInfoEO">
+	select   *   from   user_tab_comments
+    <dynamic prepend="WHERE">
+    	<isNotNull prepend="and" property="tableNames">
+			table_name in
+			<iterate property="tableNames" open="(" close=")" conjunction=",">
+				#tableNames[]:VARCHAR#
+	  		</iterate>
+    	</isNotNull>
+    	<isNotNull prepend="and" property="tableNamePattern">
+			$tableNamePattern$
+    	</isNotNull>
+    </dynamic>     
+  </select>
+  	
+  <select id="findTableColMetaInfoByTableName" parameterClass="java.util.Map" resultMap="tableColMetaInfoEO">
+	select   uc.column_name,uc.comments,tc.DATA_TYPE,tc.DATA_PRECISION AS DATA_PRECISION,tc.DATA_SCALE,tc.CHAR_LENGTH,tc.nullable   from   user_col_comments uc,all_tab_columns tc where uc.table_name=tc.TABLE_NAME and uc.column_name=tc.COLUMN_NAME and uc.table_name like #tableName:VERCHAR#
+  </select>
+</sqlMap>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<!-- 使用annotation 自动注册bean,并保证@Required,@Autowired的属性被注入 -->
+	<context:component-scan base-package="com.jscn" />
+
+	<bean id="queryBuilder" class="com.jscn.commons.core.dao.QueryBuilderFreemarker" />
+
+	<bean id="complexString" class="java.lang.String">
+		<constructor-arg>
+			<value><![CDATA[
+         SELECT COUNT(T.PARENT_ID) FROM T_WAREHOUSE_FORM_DETAIL T,T_WAREHOUSE_FORM F,T_BILLOFLADING B, T_ORDER O
+         WHERE T.PARENT_ID = F.ID AND F.BL_ID = B.ID AND B.ORDER_ID = O.ID  AND F.ACTIVE='1'
+         <#if blNo??>
+           AND B.BL_NO = :blNo
+         </#if>
+         <#if orderNo??>
+           AND O.ORDER_NO = :orderNo
+         </#if>
+         <#if operator??>
+           AND F.OPERATOR = ${operator}
+         </#if>
+         <#if beginDate??>
+           AND F.OPERATE_TIME >= :beginDate
+         </#if>
+         <#if endDate??>
+           AND F.OPERATE_TIME <= :endDate
+         </#if>
+         <#if orgIds??>
+          and O.ORG_ID in ${orgIds}
+         </#if>
+     ]]></value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="testUser" class="java.lang.String">
+		<constructor-arg>
+			<value><![CDATA[
+         ${user}
+     ]]></value>
+		</constructor-arg>
+	</bean>
+
+</beans>
